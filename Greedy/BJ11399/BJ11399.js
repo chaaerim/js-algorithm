@@ -18,6 +18,7 @@ function solution(input){
 
 // 더 간단히 풀기
 // n은 개수 
+//앞에서 부터 순서대로 더해지므로 제일 앞에 있는 수는 개수 만큼, 그 이후에 있는 것들은 인덱스를 뺀만큼 더해짐. 
 
 const answer = input
   .split(" ")

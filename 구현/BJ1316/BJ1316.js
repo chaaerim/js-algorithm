@@ -5,7 +5,6 @@ const input = fs.readFileSync(filePath).toString().trim().split("\n");
 const inputCount=Number(input.shift())
 let answer=0;
 
-
 const caseCount = Number(input[0]);
 let countGroupWord = 0;
 
