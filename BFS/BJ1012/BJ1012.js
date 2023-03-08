@@ -1,81 +1,78 @@
 const fs = require('fs');
 const filePath = process.platform === 'linux' ? '/dev/stdin' : './input.txt';
-const input = fs.readFileSync(filePath).toString().trim().split("\n");
+const input = fs.readFileSync(filePath).toString().trim().split('\n');
 
-class Queue{
-    constructor(){
-        this.queue=[]
-        this.front=0
-        this.rear=0
-    }
-    enqueue(value){
-        this.queue[this.rear++]=value;
-    }
-    dequeue(){
-        const value=this.queue[this.front];
-        delete this.queue[this.front];
-        this.front+=1
-        return value
-    }
-    isEmpty(){
-        return this.rear===this.front
-    }
+class Queue {
+  constructor() {
+    this.queue = [];
+    this.front = 0;
+    this.rear = 0;
+  }
+  enqueue(value) {
+    this.queue[this.rear++] = value;
+  }
+  dequeue() {
+    const value = this.queue[this.front];
+    delete this.queue[this.front];
+    this.front += 1;
+    return value;
+  }
+  isEmpty() {
+    return this.rear === this.front;
+  }
 }
 
-solution(input)
-function solution(input){
-    // 데이터 세팅 
-    const testNum=Number(input.shift())
-    let [c, r, n]=input.shift().split(' ')
-    c=Number(c), r=Number(r), n=Number(n)
+const dr = [1, -1, 0, 0];
+const dc = [0, 0, 1, -1];
 
-    let map=Array.from(Array(r), ()=>Array(c).fill(0))
-    let visited=Array.from(Array(r), ()=>Array(c).fill(false))
-    let count=0
-    const inputArr=[]
-    input.forEach((el)=>{
-       inputArr.push(el.split(' '))
-    })
-    
-    for(let i=0; i<inputArr.length; i++){
-        let col=Number(inputArr[i][0])
-        let row=Number(inputArr[i][1])
-        map[row][col]=1
+const [n, ...last] = input;
+const inputArr = [];
+last.forEach(el => {
+  inputArr.push(el.split(' '));
+});
+
+for (let i = 0; i < n; i++) {
+  const [c, r, num] = inputArr.shift();
+  let maps = Array.from(Array(Number(c)), () => new Array(Number(r)).fill(0));
+  for (let j = 0; j < Number(num); j++) {
+    const [y, x] = inputArr.shift();
+    maps[Number(y)][Number(x)] = 1;
+  }
+  solution(Number(c), Number(r), maps);
+}
+
+function solution(c, r, maps) {
+  let count = 0;
+  let visited = Array.from(Array(Number(c)), () => new Array(Number(r)).fill(false));
+
+  for (let i = 0; i < c; i++) {
+    for (let j = 0; j < r; j++) {
+      if (!visited[i][j] && maps[i][j] === 1) {
+        count++;
+        bfs(i, j, maps, visited, c, r);
+      }
     }
-    const queue=new Queue()
-    queue.enqueue([0, 0])
-    visited[0][0]=true
-    //위 아래로 움직이기 
-    const DR=[1, 0, -1, 0]
-    //오른쪽 아래로 움직이기 
-    const DC=[0, 1, 0, -1]
-    while(!queue.isEmpty()){
-        let now=queue.dequeue()
-        for(let i=0; i<DR.length;i++){
-            let nextR=now[0]+DR[i]
-            let nextC=now[1]+DC[i]
-            let nextnextR=nextR+DR[i]
-            let nextnextC=nextC+DC[i]
-            if(nextR<0 || nextC<0 || nextR>=r|| nextC>=c || visited[nextR][nextC]==true){
-                continue;
-            }
-            if(map[nextR][nextC]===1){
-                console.log(nextR, nextC)
-                console.log(nextnextR, nextnextC)
-                if(nextnextR<0 || nextnextR<0 || nextnextR>=r|| nextnextC>=c || visited[nextnextR][nextnextC]==true){
-                    continue;
-                }else if(map[nextnextR][nextnextC]===0){
-                    count++
-                }
-            }
+  }
+  console.log(count);
+}
 
-            queue.enqueue([nextR, nextC])
-            visited[nextR][nextC]=true 
-            }
-           
-        }
+function bfs(nowc, nowr, maps, visited, c, r) {
+  const queue = new Queue();
+  queue.enqueue([nowc, nowr]);
+  while (!queue.isEmpty()) {
+    let now = queue.dequeue();
+    visited[now[0]][now[1]] = true;
 
-
-
-    console.log(input, testNum, c, r, n, map, count)
+    for (let i = 0; i < dr.length; i++) {
+      let nextr = now[1] + dr[i];
+      let nextc = now[0] + dc[i];
+      if (nextr < 0 || nextr >= r || nextc < 0 || nextc >= c || visited[nextc][nextr] === true) {
+        continue;
+      }
+      if (maps[nextc][nextr] === 1) {
+        queue.enqueue([nextc, nextr]);
+        visited[nextc][nextr] = true;
+      }
+    }
+  }
 }
