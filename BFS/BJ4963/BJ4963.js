@@ -1,7 +1,7 @@
 const fs = require('fs');
 const filePath = process.platform === 'linux' ? '/dev/stdin' : './input.txt';
 const input = fs.readFileSync(filePath).toString().trim().split('\n');
-//큐
+
 class Queue {
   constructor() {
     this.queue = [];
@@ -22,65 +22,63 @@ class Queue {
   }
 }
 
-const dx = [1, -1, 0, 0, 1, -1, 1, -1];
-const dy = [0, 0, 1, -1, 1, -1, -1, 1];
+const dr = [1, -1, 0, 0, 1, -1, 1, -1];
+const dc = [0, 0, 1, -1, 1, -1, -1, 1];
 
 //입력값 처리
 while (input.length > 0) {
-  let [x, s, y] = input.shift();
-  let maps = [];
-  if (x === 0 && y === 0) {
-    return;
-  } else {
-    for (let i = 0; i < y; i++) {
-      maps.push(input.shift());
-    }
-    solution(x, y, maps);
+  let [r, c] = input.shift().split(' ');
+  const maps = [];
+
+  for (let i = 0; i < c; i++) {
+    maps.push(input.shift());
   }
+
+  solution(Number(r), Number(c), maps);
 }
 
-function solution(x, y, maps) {
-  let answer = 0;
+function solution(r, c, maps) {
+  if (r === 0 && c === 0) {
+    return;
+  }
   const numberMap = [];
+  let count = 0;
+  let visited = Array.from(Array(Number(c)), () => new Array(Number(r)).fill(false));
+
   maps.map(el => {
     el = el.replace(/\s/gi, '').split('');
     numberMap.push(el.map(i => Number(i)));
   });
 
-  if (numberMap.length === 0) {
-    return;
-  }
-
-  const visited = Array.from(Array(Number(y)), () => new Array(Number(x)).fill(false));
-
-  for (let i = 0; i < Number(y); i++) {
-    for (let j = 0; j < Number(x); j++) {
-      if (!visited[i][j] && numberMap[i][j]) {
-        answer++;
-        bfs(j, i, visited, numberMap, x, y);
+  for (let i = 0; i < c; i++) {
+    for (let j = 0; j < r; j++) {
+      if (numberMap[i][j] === 1 && !visited[i][j]) {
+        count++;
+        // visited[i][j] = true;
+        bfs(i, j, visited, numberMap, c, r);
       }
     }
   }
 
-  console.log(answer);
+  console.log(count);
 }
 
-function bfs(curX, curY, visited, numberMap, x, y) {
+function bfs(nowC, nowR, visited, numberMap, c, r) {
   const queue = new Queue();
-  queue.enqueue([curX, curY]);
-
+  //c, r
+  queue.enqueue([nowC, nowR]);
   while (!queue.isEmpty()) {
-    let cur = queue.dequeue();
-
-    for (let i = 0; i < dx.length; i++) {
-      let nextX = cur[0] + dx[i];
-      let nextY = cur[1] + dy[i];
-      if (nextX < 0 || nextX >= Number(x) || nextY < 0 || nextY >= Number(y) || visited[nextY][nextX] === true) {
+    let now = queue.dequeue();
+    visited[now[0]][now[1]] = true;
+    for (let i = 0; i < dc.length; i++) {
+      let nextC = now[0] + dc[i];
+      let nextR = now[1] + dr[i];
+      if (nextC < 0 || nextC >= c || nextR < 0 || nextR >= r || visited[nextC][nextR]) {
         continue;
       }
-      if (numberMap[nextY][nextX] === 1) {
-        queue.enqueue([nextX, nextY]);
-        visited[nextY][nextX] = true;
+      if (numberMap[nextC][nextR] === 1) {
+        queue.enqueue([nextC, nextR]);
+        visited[nextC][nextR] = true;
       }
     }
   }
