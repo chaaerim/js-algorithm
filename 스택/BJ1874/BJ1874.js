@@ -5,33 +5,24 @@ const input = fs.readFileSync(filePath).toString().trim().split('\n');
 solution(input);
 function solution([n, ...numbers]) {
   const stack = [];
-  const nums = [];
   let result = '';
-  const numberArray = [];
-  for (let i = 1; i <= Number(n); i++) {
-    numberArray.push(i);
-    nums.push(Number(numbers[i - 1]));
-  }
-
   let count = 0;
-  let k = 0;
+  let k = 1;
   while (count < Number(n)) {
-    if (stack[stack.length - 1] == nums[count]) {
+    if (stack[stack.length - 1] == Number(numbers[count])) {
       stack.pop();
       result += '-';
       count++;
       continue;
     }
-    stack.push(numberArray[k]);
+    stack.push(k);
     result += '+';
     k++;
-    if (k > Number(n)) {
+    if (k > Number(n) + 1) {
       console.log('NO');
       return;
     }
   }
 
-  for (const i of result) {
-    console.log(i);
-  }
+  console.log(result.split('').join('\n'));
 }
