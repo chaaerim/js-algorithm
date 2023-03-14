@@ -25,7 +25,7 @@ class Queue {
 const dr = [1, -1, 0, 0, 1, -1, 1, -1];
 const dc = [0, 0, 1, -1, 1, -1, -1, 1];
 
-//입력값 처리
+//입력값 처리 -> 하쒸 배열로 만들고 처리해라 .. 문자열 조심....!!!!!
 while (input.length > 0) {
   let [r, c] = input.shift().split(' ');
   const maps = [];
